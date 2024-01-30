@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medicine Finder</title>
+
+      <!--    Google fonts--> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500&family=Open+Sans:wght@700&family=Poppins:wght@400;600&family=Satisfy&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+  </head>
+  <body style="text-align: center;">
+<!--    <h1-->
+<!--      style="-->
+<!--        margin-bottom: 50px;-->
+<!--        color: #9400c3;-->
+<!--        font-size: 43px;-->
+<!--        font-family: 'Dancing Script', cursive;">-->
+<!--      Medicine Finder-->
+<!--    </h1>-->
+    <nav class="navbar navbar-top justify-content-center" style="color: #9400c3; background-color: rgb(237, 240, 255); box-shadow: 2px 2px 20px 2px rgba(0,0,0,.17); padding-top:10px; padding-bottom: 33px;">
+            <h1 style="margin-bottom: 2px; padding-top: 6px; color: #001eb3; font-size: 32px; font-family: Satisfy, cursive; font-weight: 600;">MediFinder</h1>
+            <br>
+            <br>
+      <div class="d-lg-block">
+      <span class="navbar-text mb-2" style="color: #2a52be; position: absolute; left: 94.5vh; top: 6.5vh; font-size: 13.5px;">
+        Unveils the Secret of Every Pill!
+      </span>
+    </div>
+    </nav>
+
+
+<p style="margin: 45px 15%;">
+  "Welcome to MediFinder, your health companion in the digital age! Simply input a medicine's image or name, and unlock a world of knowledge instantly. From detailed descriptions to essential insights, empower your health decisions effortlessly with MediFinder - where information meets empowerment!"
+</p>
+
+
+    <h4 style="margin-bottom: 10px; margin-top: 35px;">Give the inputs in the form of:</h4>
+
+    <div class="row">
+      <div class="first col-lg-3 col-md-10 col-sm-10">
+         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <form action="/text_input" method="post">
+          <label for="input" placeholder="Enter the Medicine name"
+            >Medicine name:
+          </label>
+            <br />
+          <br />
+          <input type="text" id="input" name="text" required />
+          <br />
+          <br />
+          <button type="submit" class="glow-on-hover">Submit</button>
+        </form>
+      </div>
+      </div>
+
+      <div class="second col-lg-3 col-md-10 col-sm-10">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <form
+          action="/perform_ocr"
+          method="post"
+          enctype="multipart/form-data"
+          id="ocrForm"
+        >
+          <label for="file" style="text-align: left">Medicine Image: </label>
+          <br />
+          <br />
+          <div class="custom-file-container" id="file">
+            <input
+              type="file"
+              name="image_file"
+              accept="image/*"
+              required
+              id="ocrImageInput"
+              onchange="previewImage()"
+            />
+            <label for="ocrImageInput" id="chooseFileLabel"
+              >Drop/Choose File</label
+            >
+          </div>
+          <br />
+          <br />
+          <button type="submit" class="glow-on-hover">Submit</button>
+        </form>
+          </div>
+      </div>
+      <div class="third col-lg-3 col-md-10 col-sm-10">
+         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <label for="cameraContainer" style="text-align: left">Medicine Capture: </label>
+        <br>
+        <br>
+
+    <button onclick="openCamera()" id="openCameraBtn" style="margin-bottom: 23px;">Open Camera</button>
+<!--        <br>-->
+
+    <div id="cameraContainer" style="display: none;">
+        <video id="camera" width="320" height="240"  autoplay></video>
+      <br>
+        <button onclick="captureImage()" style="margin-top: 20px;">Capture</button>
+    </div>
+    <div id="captureContainer" style="display: none;">
+        <img id="capturedImage" width="320" height="240" alt="Captured Image">
+        <br>
+        <button onclick="recapture()" style="margin-top: 25px;">Recapture</button>
+
+    </div>
+    <br>
+<!--            <br>-->
+
+    <button onclick="sendImage()" class="glow-on-hover">Submit</button>
+    <form id="imageForm" action="/capture" method="post">
+        <input type="hidden" id="capturedImageData" name="captured_image">
+    </form>
+      </div>
+    </div>
+
+    </div>
+
+<!-- <nav class="navbar navbar-expand-lg nav-bottom" style="color: #9400c3; box-shadow: 2px 2px 20px 2px rgba(0,0,0,.17)">-->
+<!--      <div class="container-md">-->
+<!--&lt;!&ndash;        <a class="navbar-brand" href="#">Medicine Finder</a>&ndash;&gt;-->
+<!--            <h1 class="navbar-brand" style="color: #9400c3; font-size: 35px; font-family: 'Permanent Marker', cursive;">Medicine Finder</h1>-->
+<!--      </div>-->
+<!--    </nav>-->
+<nav class="navbar nav-bottom justify-content-center">
+        <p style="font-size: 17px">Made with ❤️ by Fatheem & Irfan</p>
+    </nav>
+
+    <script>
+      let cameraStream;
+        const cameraContainer = document.getElementById('cameraContainer');
+        const captureContainer = document.getElementById('captureContainer');
+        const capturedImage = document.getElementById('capturedImage');
+        const imageForm = document.getElementById('imageForm');
+        const capturedImageData = document.getElementById('capturedImageData');
+        const openCameraBtn = document.getElementById('openCameraBtn')
+
+        async function openCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                cameraStream = stream;
+                const camera = document.getElementById('camera');
+                camera.srcObject = stream;
+                cameraContainer.style.display = 'block';
+                openCameraBtn.style.display = 'none';
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+            }
+        }
+
+        function captureImage() {
+            const canvas = document.createElement('canvas');
+            const camera = document.getElementById('camera');
+            canvas.width = camera.videoWidth;
+            canvas.height = camera.videoHeight;
+            canvas.getContext('2d').drawImage(camera, 0, 0, canvas.width, canvas.height);
+            capturedImage.src = canvas.toDataURL('image/png');
+            cameraStream.getTracks().forEach(track => track.stop());
+            cameraContainer.style.display = 'none';
+            captureContainer.style.display = 'block';
+        }
+
+        function recapture() {
+            captureContainer.style.display = 'none';
+            cameraContainer.style.display = 'block';
+            openCamera();
+        }
+
+        function sendImage() {
+            const canvas = document.createElement('canvas');
+            const camera = document.getElementById('capturedImage');
+            canvas.width = camera.width;
+            canvas.height = camera.height;
+            canvas.getContext('2d').drawImage(camera, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+            capturedImageData.value = imageData;
+            imageForm.submit();
+        }
+    </script>
+
+    <style>
+
+    body{
+     overflow-x: hidden;
+     width: 215vh;}
+    p{
+    font-size: 19px;}
+
+    .nav-bottom {
+  background-color: #333742;
+  color: white;
+  height: 70px;
+  font-size: 17px;
+  box-shadow: 2px 2px 20px 2px rgba(0,0,0,.17);
+}
+
+    .first, .second, .third {
+
+  padding: 10px;
+  height: 430px;
+  border-style: solid;
+  border-width: 2px;
+  margin: 60px;
+
+background-color: rgb(237, 240, 255);
+box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+backdrop-filter: blur( 10.5px );
+-webkit-backdrop-filter: blur( 10.5px );
+border-radius: 20px;
+border-width: 0;
+border: none;
+}
+
+      .glow-on-hover {
+        width: 80px;
+        height: 35px;
+        border: none;
+        outline: none;
+        color: #fff;
+        font-size: 0.95rem;
+        background-color: #fff;
+        cursor: pointer;
+        position: relative;
+        z-index: 0;
+        border-radius: 10px;
+      }
+
+      .glow-on-hover:before {
+        content: "";
+        background: linear-gradient(
+          45deg,
+          #ff0000,
+          #ff7300,
+          #fffb00,
+          #48ff00,
+          #00ffd5,
+          #002bff,
+          #7a00ff,
+          #ff00c8,
+          #ff0000
+        );
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        background-size: 400%;
+        z-index: -1;
+        filter: blur(5px);
+        width: calc(100% + 4px);
+        height: calc(100% + 4px);
+        animation: glowing 20s linear infinite;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        border-radius: 10px;
+      }
+
+      .glow-on-hover:active {
+        color: #363636;
+      }
+
+      .glow-on-hover:active:after {
+        background: transparent;
+      }
+
+      .glow-on-hover:hover:before {
+        opacity: 1;
+      }
+
+      .glow-on-hover:after {
+        z-index: -1;
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #111;
+        left: 0;
+        top: 0;
+        border-radius: 10px;
+      }
+
+      @keyframes glowing {
+        0% {
+          background-position: 0 0;
+        }
+        50% {
+          background-position: 400% 0;
+        }
+        100% {
+          background-position: 0 0;
+        }
+      }
+
+      /* Style for the custom file input */
+      .custom-file-container {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+      }
+
+      .custom-file-container input {
+        position: absolute;
+        font-size: 100px;
+        opacity: 0;
+        right: 0;
+        top: 0;
+      }
+
+      .custom-file-container label {
+        display: inline-block;
+        padding: 80px 110px;
+        border-style: dotted;
+        border-color: #3498db;
+        cursor: pointer;
+        background-size: auto 130px; /* Set the desired width and height for the preview icon */
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+    </style>
+
+    <script>
+      function previewImage() {
+        var input = document.getElementById("ocrImageInput");
+        var label = document.getElementById("chooseFileLabel");
+        var submitBtn = document.getElementById("submitBtn");
+
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+
+          reader.onload = function (e) {
+            label.style.backgroundImage = "url(" + e.target.result + ")";
+            label.textContent = ""; // Remove the text content
+            submitBtn.style.display = "block"; // Show the submit button
+          };
+
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+    </script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+  </body>
+</html>
+
+
+
+
+

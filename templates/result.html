@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Finder</title>
+    <!--    Google fonts--> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500&family=Open+Sans:wght@700&family=Poppins:wght@400;600&family=Satisfy&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body style="text-align: center;">
+
+
+    <nav class="navbar navbar-top justify-content-center" style="color: #9400c3; background-color: rgb(237, 240, 255); box-shadow: 2px 2px 20px 2px rgba(0,0,0,.17); padding-top:10px; padding-bottom: 33px;">
+            <h1 style="margin-bottom: 2px; padding-top: 6px; color: #001eb3; font-size: 32px; font-family: Satisfy, cursive; font-weight: 600;">MediFinder</h1>
+            <br>
+            <br>
+      <div class="d-lg-block">
+      <span class="navbar-text mb-2" style="color: #2a52be; position: absolute; left: 92.7vh; top: 6.5vh; font-size: 13.5px;">
+        Unveils the Secret of Every Pill!
+      </span>
+    </div>
+    </nav>
+
+    <style>
+        p{
+             font-size: 20px;
+            }
+    </style>
+
+    <script>
+
+var dataFromMongoDB = JSON.parse('{{ serialized_data | safe }}');
+
+if (dataFromMongoDB) {
+    // Create a new div element
+    var resultDiv = document.createElement('div');
+
+    var imageName = dataFromMongoDB['Medicine Name'];
+    var imagePath = "http://localhost:5000/uploads/" + imageName + ".jpg";
+
+    var imgElement = document.createElement("img");
+    imgElement.src = imagePath;
+    imgElement.width = 170;
+    imgElement.style.marginBottom = '20px';
+
+    // Append the image to the result div
+<!--    resultDiv.appendChild(imgElement);-->
+        var secondChild = document.body.children[1];
+        imgElement.onload = function() {
+                document.body.insertBefore(imgElement, secondChild);
+
+                var btn = document.getElementById("redirectButton");
+
+                btn.style.marginBottom='60px';
+            };
+
+    for (var key in dataFromMongoDB) {
+        if (dataFromMongoDB.hasOwnProperty(key) && key !== "_id") {
+            var paragraph = document.createElement('p');
+            var strong = document.createElement('strong');
+            strong.appendChild(document.createTextNode(key + ': '));
+
+            // Check if the key is "Medicine Name" for special formatting
+            if (key === "Medicine Name") {
+                var value = document.createTextNode(dataFromMongoDB[key].charAt(0).toUpperCase() + dataFromMongoDB[key].slice(1));
+            } else {
+                var value = document.createTextNode(dataFromMongoDB[key]);
+            }
+
+            paragraph.appendChild(strong);
+            paragraph.appendChild(value);
+
+            // Append the paragraph to the result div
+            resultDiv.appendChild(paragraph);
+        }
+    }
+
+    // Insert the result div into the body
+    document.body.appendChild(resultDiv);
+} else {
+    document.write('<p>No data found for the condition.</p>');
+}
+
+
+
+
+
+    </script>
+
+<button id="redirectButton" class="bubbly-button">Upload another</button>
+
+
+    <nav class="navbar nav-bottom justify-content-center" id="footer">
+        <p style="font-size: 17px;">Made with ❤️ by Fatheem & Irfan</p>
+    </nav>
+
+<style>
+
+body{
+      min-height: 100vh;
+
+}
+.navbar{
+margin-bottom: 40px;
+}
+
+.nav-bottom {
+  background-color: #333742;
+  color: white;
+  height: 70px;
+  font-size: 17px;
+  box-shadow: 2px 2px 20px 2px rgba(0,0,0,.17);
+  margin-bottom: 0;
+
+}
+
+.bubbly-button{
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  display: inline-block;
+  font-size: 1em;
+  padding: 0.70em 0.9em;
+  margin-top: 15px;
+  margin-bottom: 200px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #ff0081;
+  color: #fff;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: transform ease-in 0.1s, box-shadow ease-in 0.25s;
+  box-shadow: 0 2px 25px rgba(255, 0, 130, 0.5);
+
+  &:focus {
+    outline: 0;
+  }
+
+  &:before, &:after{
+    position: absolute;
+    content: '';
+    display: block;
+    width: 140%;
+    height: 100%;
+    left: -20%;
+    z-index: -1000;
+    transition: all ease-in-out 0.5s;
+    background-repeat: no-repeat;
+  }
+
+  &:before{
+    display: none;
+    top: -75%;
+    background-image:
+      radial-gradient(circle, #ff0081 20%, transparent 20%),
+    radial-gradient(circle,  transparent 20%, #ff0081 20%, transparent 30%),
+    radial-gradient(circle, #ff0081 20%, transparent 20%),
+    radial-gradient(circle, #ff0081 20%, transparent 20%),
+    radial-gradient(circle,  transparent 10%, #ff0081 15%, transparent 20%),
+    radial-gradient(circle, #ff0081 20%, transparent 20%),
+    radial-gradient(circle, #ff0081 20%, transparent 20%),
+    radial-gradient(circle, #ff0081 20%, transparent 20%),
+    radial-gradient(circle, #ff0081 20%, transparent 20%);
+  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%;
+  //background-position: 0% 80%, -5% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 85% 30%;
+  }
+
+  &:after{
+    display: none;
+    bottom: -75%;
+    background-image:
+    radial-gradient(circle, #ff0081 20%, transparent 20%),
+    radial-gradient(circle, #ff0081 20%, transparent 20%),
+    radial-gradient(circle,  transparent 10%, #ff0081 15%, transparent 20%),
+    radial-gradient(circle, #ff0081 20%, transparent 20%),
+    radial-gradient(circle, #ff0081 20%, transparent 20%),
+    radial-gradient(circle, #ff0081 20%, transparent 20%),
+    radial-gradient(circle, #ff0081 20%, transparent 20%);
+  background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 10% 10%, 20% 20%;
+  //background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+
+  &:active{
+    transform: scale(0.9);
+    background-color: darken(#ff0081, 5%);
+    box-shadow: 0 2px 25px rgba(255, 0, 130, 0.2);
+  }
+
+  &.animate{
+    &:before{
+      display: block;
+      animation: topBubbles ease-in-out 0.75s forwards;
+    }
+    &:after{
+      display: block;
+      animation: bottomBubbles ease-in-out 0.75s forwards;
+    }
+  }
+}
+
+
+@keyframes topBubbles {
+  0%{
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+  }
+    50% {
+      background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;}
+ 100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
+  background-size: 0% 0%, 0% 0%,  0% 0%,  0% 0%,  0% 0%,  0% 0%;
+  }
+}
+
+@keyframes bottomBubbles {
+  0%{
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+  }
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;}
+ 100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
+  background-size: 0% 0%, 0% 0%,  0% 0%,  0% 0%,  0% 0%,  0% 0%;
+  }
+}
+</style>
+<script>
+var animateButton = function(e) {
+
+  e.preventDefault;
+  //reset animation
+  e.target.classList.remove('animate');
+
+  e.target.classList.add('animate');
+  setTimeout(function(){
+    e.target.classList.remove('animate');
+  },700);
+};
+
+var bubblyButtons = document.getElementsByClassName("bubbly-button");
+
+for (var i = 0; i < bubblyButtons.length; i++) {
+  bubblyButtons[i].addEventListener('click', animateButton, false);
+  bubblyButtons[i].addEventListener('click', function() {
+    setTimeout(redirect, 500);
+  });
+
+  function redirect() {
+    window.location = "http://localhost:5000/";
+  }
+}
+
+</script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+</body>
+</html>
